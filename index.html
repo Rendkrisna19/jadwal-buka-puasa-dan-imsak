@@ -86,11 +86,21 @@
             text-align: center;
             color: #228B22;
         }
+
+        .alarm{
+            background-color: #ffcc00;
+            color: black;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h2>Jadwal Buka Puasa & Sahur</h2>
+        <a class="alarm" href="alarm.html">Setel Alarm mu</a>
         <div class="info">
             <p id="tanggal"></p>
             <p id="puasaKe"></p>
@@ -102,6 +112,7 @@
             <option value="Pematang Siantar">Pematang Siantar</option>
             <option value="Tanjung Balai">Tanjung Balai</option>
         </select>
+        
         <div class="jadwal">
             <p><b>Imsak:</b> <span id="imsak">-</span></p>
             <p><b>Buka Puasa (Maghrib):</b> <span id="maghrib">-</span></p>

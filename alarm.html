@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alarm Sahur & Berbuka</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 400px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+            margin: auto;
+        }
+        h2 {
+            color: #228B22;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        label {
+            font-size: 16px;
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            background-color: #ffcc00;
+            color: black;
+            font-size: 16px;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .kembali{
+            background-color: #ffcc00;
+            color: black;
+            font-size: 16px;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+
+        }
+        .kembali:hover{
+            background-color: #ffdb4d;
+        }
+        button:hover {
+            background-color: #ffdb4d;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Atur Alarm Sahur & Berbuka</h2>
+
+        <div class="input-group">
+            <label for="sahur">Waktu Sahur:</label>
+            <input type="time" id="sahur">
+        </div>
+
+        <div class="input-group">
+            <label for="buka">Waktu Berbuka:</label>
+            <input type="time" id="buka">
+        </div>
+        <a class="kembali" href="index.html">kembali</a>
+
+
+        <button onclick="setAlarm()">Simpan Alarm</button>
+    </div>
+
+    <audio id="alarmSound" src="https://www.islamicfinder.org/special/islamic-events/adhan-mp3/" preload="auto"></audio>
+
+    <script>
+        function setAlarm() {
+            let sahurTime = document.getElementById("sahur").value;
+            let bukaTime = document.getElementById("buka").value;
+
+            localStorage.setItem("sahurAlarm", sahurTime);
+            localStorage.setItem("bukaAlarm", bukaTime);
+
+            alert("Alarm berhasil disimpan!");
+        }
+
+        function checkAlarm() {
+            let now = new Date();
+            let currentTime = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
+
+            let sahurAlarm = localStorage.getItem("sahurAlarm");
+            let bukaAlarm = localStorage.getItem("bukaAlarm");
+
+            if (currentTime === sahurAlarm || currentTime === bukaAlarm) {
+                let sound = document.getElementById("alarmSound");
+                sound.play();
+
+                if (Notification.permission === "granted") {
+                    new Notification("Waktunya Sahur / Berbuka!", {
+                        body: "Segera bersiap!",
+                        icon: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+                    });
+                } else if (Notification.permission !== "denied") {
+                    Notification.requestPermission().then(permission => {
+                        if (permission === "granted") {
+                            new Notification("Waktunya Sahur / Berbuka!", {
+                                body: "Segera bersiap!",
+                                icon: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+                            });
+                        }
+                    });
+                }
+            }
+        }
+
+        // Cek alarm setiap menit
+        setInterval(checkAlarm, 60000);
+
+        // Daftarkan Service Worker langsung dalam file ini
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/service-worker.js').then(() => {
+                console.log('Service Worker Registered');
+            }).catch(err => console.log(err));
+        }
+
+        // Simulasi Service Worker di dalam halaman ini langsung
+        if ('serviceWorker' in navigator && 'PushManager' in window) {
+            navigator.serviceWorker.register('data:text/javascript,self.addEventListener("install",()=>console.log("Service Worker Installed"));self.addEventListener("push",event=>{self.registration.showNotification("Waktunya Sahur / Berbuka!",{body:"Segera bersiap!",icon:"https://cdn-icons-png.flaticon.com/512/3135/3135715.png"});});').then(reg => {
+                console.log('Service Worker & Push Registered');
+            }).catch(err => console.log('Service Worker Failed', err));
+        }
+    </script>
+
+</body>
+</html>
