@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jadwal Buka Puasa & Sahur Sumatera Utara</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:ital,wght@0,600;0,700;0,800;1,500;1,700;1,800&display=swap');
+        body {
+            font-family: 'Poppins', sans-serif;
+            text-align: center;
+            background: linear-gradient(to bottom, #228B22, #ffffff);
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 450px;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
+            margin: auto;
+            justify-content: center;
+            align-items: center;
+
+        }
+        h2 {
+            color: #ffcc00;
+            margin-bottom: 15px;
+        }
+        .info {
+            font-size: 18px;
+            margin: 10px 0;
+            color: #444;
+        }
+        .jadwal {
+            background: #228B22;
+            color: white;
+            padding: 18px;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+        .jadwal p {
+            font-size: 18px;
+            margin: 5px 0;
+        }
+        select {
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #228B22;
+            background: white;
+            color: #228B22;
+            margin-top: 10px;
+            width: 100%;
+        }
+        @media (max-width: 600px) {
+            .container {
+                width: 90%;
+                padding: 20px;
+            }
+            h2 {
+                font-size: 22px;
+            }
+            .info, .jadwal p {
+                font-size: 16px;
+            }
+        }
+
+
+        .qoutes h1{
+            text-align: center;
+            color: #ffffff;
+            text-transform: uppercase;
+            text-align: center;
+            text-shadow: 
+                2px 2px 0px #228B22,  /* Bayangan hijau tua */
+                4px 4px 0px #ffcc00,  /* Bayangan kuning */
+                6px 6px 5px rgba(0, 0, 0, 0.5); /* Efek shadow lembut */
+
+        }
+
+        .qoutes p {
+            text-align: center;
+            color: #228B22;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Jadwal Buka Puasa & Sahur</h2>
+        <div class="info">
+            <p id="tanggal"></p>
+            <p id="puasaKe"></p>
+        </div>
+        <select id="kota">
+            <option value="Medan">Medan</option>
+            <option value="Binjai">Binjai</option>
+            <option value="Tebing Tinggi">Tebing Tinggi</option>
+            <option value="Pematang Siantar">Pematang Siantar</option>
+            <option value="Tanjung Balai">Tanjung Balai</option>
+        </select>
+        <div class="jadwal">
+            <p><b>Imsak:</b> <span id="imsak">-</span></p>
+            <p><b>Buka Puasa (Maghrib):</b> <span id="maghrib">-</span></p>
+        </div>
+
+        
+    </div>
+
+    <div class="qoutes">
+        <h1 >Marhaban Ya Ramadhan 1445 H
+        </h1>
+        <p>"Wahai orang-orang yang beriman! Diwajibkan atas kamu berpuasa sebagaimana diwajibkan atas orang-orang sebelum kamu agar kamu bertakwa." (QS. Al-Baqarah: 183)"
+        </p>
+    </div>
+    <script>
+        $(document).ready(function () {
+            let ramadhanStart = new Date("2025-03-01");
+            let today = new Date();
+            let diff = Math.floor((today - ramadhanStart) / (1000 * 60 * 60 * 24)) + 1;
+            let day = today.getDate();
+            let month = today.getMonth() + 1;
+            let year = today.getFullYear();
+            let daysOfWeek = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+            let todayName = daysOfWeek[today.getDay()];
+            $("#tanggal").html(`<b>${todayName}, ${day}-${month}-${year}</b>`);
+            $("#puasaKe").html(`<b>Hari ke-${diff} Puasa Ramadhan</b>`);
+            function loadJadwal(kota) {
+                $.ajax({
+                    url: `https://api.aladhan.com/v1/timingsByCity?city=${kota}&country=Indonesia&method=2`,
+                    type: "GET",
+                    success: function (response) {
+                        let data = response.data.timings;
+                        $("#imsak").text(data.Imsak);
+                        $("#maghrib").text(data.Maghrib);
+                    },
+                    error: function () {
+                        alert("Gagal mengambil data dari API.");
+                    }
+                });
+            }
+            loadJadwal($("#kota").val());
+            $("#kota").change(function () {
+                loadJadwal($(this).val());
+            });
+        });
+    </script>
+</body>
+</html>
